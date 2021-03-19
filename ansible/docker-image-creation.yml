@@ -6,7 +6,7 @@
   tasks:
   - name: Build New Docker Image
     docker_image:
-      path: /tomcat
+      path: ../tomcat
       name: docker.io/yadudock/tc
       tag: BUILD_ID
     register: docker_build
