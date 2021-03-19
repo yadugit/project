@@ -30,12 +30,12 @@ public class BasicJspTest extends HtmlTestCase {
 
     public void testRenderingTrivialJsp() throws Exception {
         get("/index.jsp");
-        output().shouldContain("2017");
+        output().shouldContain("2021");
     }
 
     public void testOutputAssertion() throws Exception {
         get("/index.jsp");
-        output().shouldContain("2019"); // Sree
+        output().shouldContain("2021"); // Sree
         try {
             output().shouldContain("No such content");
             throw new RuntimeException("Assertion should've failed");

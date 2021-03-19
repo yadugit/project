@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     parameters {
-        string(name: 'MVNCACHE', defaultValue: '/Users/sree/vms/docker/jenkins/2019-feb-1/.m2', description: 'Maven repository cache in the host machine')    
-        string(name: 'JENKINSDIR', defaultValue: '/Users/sree/vms/docker/jenkins/jenkins_home', description: 'The project path in the host machine')
-        string(name: 'DOCKER_U', defaultValue: 'schogini', description: 'Docker Hib Username')
+        string(name: 'MVNCACHE', defaultValue: '/var/lib/docker/volumes/mvncache/_data/.m2', description: 'Maven repository cache in the host machine')    
+        string(name: 'JENKINSDIR', defaultValue: '/var/lib/docker/volumes/jenkins-data/_data', description: 'The project path in the host machine')
+        string(name: 'DOCKER_U', defaultValue: 'yadudock', description: 'Docker Hib Username')
         string(name: 'DOCKER_P', defaultValue: '', description: 'Docker Hub Password')        
     }
     
@@ -39,19 +39,19 @@ pipeline {
 
       stage('Build Docker Image') {
         steps {
-          sh "sudo docker build -t schogini/tc:${BUILD_ID} tomcat"
+          sh "sudo docker build -t yadudock/tc:${BUILD_ID} tomcat"
         }
       }
       stage('Push Docker Image') {
         steps {
           sh "sudo docker login -u=${params.DOCKER_U} -p=${params.DOCKER_P}"
-          sh "sudo docker push schogini/tc:${BUILD_ID}"
+          sh "sudo docker push yadudock/tc:${BUILD_ID}"
         }
       }
       stage('Deploy to Docker Image Tomcat') {
           steps {
             sh "sudo docker inspect my-tcc2 >/dev/null 2>&1 && sudo docker rm -f my-tcc2 || echo No container to remove. Proceed."
-            sh "sudo docker run -d --name my-tcc2 -p 8125:8080 schogini/tc:${BUILD_ID}"
+            sh "sudo docker run -d --name my-tcc2 -p 8125:8080 yadudock/tc:${BUILD_ID}"
           }
       } 
       stage('Deploy to Docker Mapped Tomcat') {
@@ -64,7 +64,7 @@ pipeline {
       stage('Deploy to Kubernetes') {
         steps {
            sh "sudo kubectl apply -f kubernetes/deploy-svc.yml"
-          #sh "sudo kubectl set image deploy/webapp-demo-deploy webapp=docker.io/schogini/docker.io/schogini/tc:${BUILD_ID}"
+           sh "sudo kubectl set image deploy/webapp-demo-deploy webapp=docker.io/yadudock/docker.io/yadudock/tc:${BUILD_ID}"
         }
       } 
    }

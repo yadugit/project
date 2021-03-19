@@ -7,7 +7,7 @@
   - name: Build New Docker Image
     docker_image:
       path: ./tomcat
-      name: docker.io/schogini/tc
+      name: docker.io/yadudock/tc
       tag: BUILD_ID
     register: docker_build
 
