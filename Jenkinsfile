@@ -20,6 +20,7 @@ pipeline {
           sh '''sed -i \"s/BUILD_ID/${BUILD_ID}/\" src/main/webapp/index.jsp'''
           sh '''sed -i \"s/BUILD_ID/${BUILD_ID}/\" kubernetes/deploy-svc.yml'''
           sh '''sed -i \"s/BUILD_ID/${BUILD_ID}/\" ansible/docker-image-creation.yml'''
+          sh '''sed -i \"s/DOCKER_P/${DOCKER_P}/\" ansible/docker-image-creation.yml'''
           sh '''sed -i \"s/BUILD_ID/${BUILD_ID}/\" ansible/sample.yml'''
           
         }
