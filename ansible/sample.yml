@@ -1,0 +1,14 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: no
+
+  tasks:
+  - name: Build New Docker Image
+    docker_image:
+      path: ./tomcat
+      name: docker.io/schogini/tc
+      tag: BUILD_ID
+    register: docker_build
+
+  

@@ -1,0 +1,102 @@
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: webapp-demo-deploy
+spec:
+  selector:
+    matchLabels:
+      app: webapp-tpl
+  replicas: 5 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: webapp-tpl
+    spec:
+      containers:
+      - name: webapp
+        image: docker.io/schogini/tc:BUILD_ID
+        env:
+         - name: NODE
+           #value: "DEMO-NODE"
+           valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-demo-svc
+  labels:
+    name: webapp-demo-svc
+spec:
+  selector:
+    app: webapp-tpl
+  type: LoadBalancer
+  ports:
+  - name: http
+    port: 8283     # LoadBalancer Endpoint Port
+    targetPort: 8080 # Container Port
+
+
+# kubectl apply -f java-web-app-with-test/kubernetes/deploy-svc.yml 
+# deployment.apps/webapp-demo-deploy created
+# service/webapp-demo-svc created
+# kubectl set image deploy/webapp-demo-deploy webapp=docker.io/schogini/docker.io/schogini/tc:latest
+# kubectl scale deployment webapp-demo-deploy --replicas 1
+
+# Sree4>kubectl get svc -o wide
+# NAME              TYPE           CLUSTER-IP      EXTERNAL-IP                                                              PORT(S)          AGE       SELECTOR
+# kubernetes        ClusterIP      100.64.0.1      <none>                                                                   443/TCP          126d      <none>
+# webapp-demo-svc   LoadBalancer   100.71.150.82   a7ef0894a262311e9b2fd061551e7f38-292569198.us-east-1.elb.amazonaws.com   8283:32045/TCP   13m       app=webapp-tpl
+
+# Sree4>kubectl get all -o wide
+# NAME                                      READY     STATUS              RESTARTS   AGE       IP            NODE
+# pod/webapp-demo-deploy-5f6bbb8cd7-4cw78   1/1       Running             0          5m        100.96.5.24   ip-172-20-32-158.ec2.internal
+# pod/webapp-demo-deploy-5f6bbb8cd7-8jc8m   0/1       ContainerCreating   0          14s       <none>        ip-172-20-52-42.ec2.internal
+# pod/webapp-demo-deploy-5f6bbb8cd7-9vffs   1/1       Running             0          14s       100.96.5.27   ip-172-20-32-158.ec2.internal
+# pod/webapp-demo-deploy-5f6bbb8cd7-s8ps7   1/1       Running             0          51s       100.96.5.26   ip-172-20-32-158.ec2.internal
+# pod/webapp-demo-deploy-5f6bbb8cd7-zp969   1/1       Running             0          5m        100.96.5.25   ip-172-20-32-158.ec2.internal
+
+# LOAD BALANCING!!
+# Sree4>curl -s a7ef0894a262311e9b2fd061551e7f38-292569198.us-east-1.elb.amazonaws.com:8283/webapp/| grep Node
+# <h2>Node: ip-172-20-52-42.ec2.internal</h2>
+# Sree4>curl -s a7ef0894a262311e9b2fd061551e7f38-292569198.us-east-1.elb.amazonaws.com:8283/webapp/| grep Node
+# <h2>Node: ip-172-20-32-158.ec2.internal</h2>
+
+# <!DOCTYPE html>
+# <html>
+# <body>
+# <h2>Hello World!</h2>
+# <h3>Hello from Sree 2017</h3>
+# <h3>5+2=7</h3>
+# <h2>Current time is 2019-02-01T13:29:42.010</h2>
+
+# <h2>InetAddress: webapp-demo-deploy-855b95fb7d-9mbdw/100.96.5.20</h2>
+# <h2>Hostname: webapp-demo-deploy-855b95fb7d-9mbdw</h2>
+# <h2>Node: null</h2>
+# </body>
+# </html>
+# Sree4>curl a7ef0894a262311e9b2fd061551e7f38-292569198.us-east-1.elb.amazonaws.com:8283/webapp/
+# <!DOCTYPE html>
+# <html>
+# <body>
+# <h2>Hello World!</h2>
+# <h3>Hello from Sree 2017</h3>
+# <h3>5+2=7</h3>
+# <h2>Current time is 2019-02-01T13:29:50.092</h2>
+
+# <h2>InetAddress: webapp-demo-deploy-855b95fb7d-nl9s5/100.96.5.21</h2>
+# <h2>Hostname: webapp-demo-deploy-855b95fb7d-nl9s5</h2>
+# <h2>Node: null</h2>
+# </body>
+# </html>
+# Sree4>
+
+
+
+# kubectl run nginx-demo --image=docker.io/schogini/swarm-demo-8181
+# kubectl expose deployment nginx-demo --type=LoadBalancer --port=8282 --target-port=8181
+# kubectl set image deploy/webapp-demo-deploy webapp=docker.io/schogini/docker.io/schogini/tc:latest

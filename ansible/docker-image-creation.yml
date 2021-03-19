@@ -1,0 +1,47 @@
+---
+- hosts: localhost
+  become: true
+  gather_facts: no
+
+  tasks:
+  - name: Build New Docker Image
+    docker_image:
+      path: ./tomcat
+      name: docker.io/schogini/tc
+      tag: BUILD_ID
+    register: docker_build
+
+  # - name: 'Retag image'
+  #   shell: docker tag schogini/abdemotc:latest schogini/tc:latest
+  #   when: docker_build.changed
+
+  - name: Log into DockerHub
+    docker_login:
+      # registry: docker.io
+      username: schogini
+      password: ABCD
+      reauthorize: yes
+    when: docker_build.changed
+
+  - name: Tag and push to docker hub latest
+    docker_image:
+      name: schogini/tc:BUILD_ID
+      repository: docker.io/schogini/tc:BUILD_ID
+      push: yes
+    when: docker_build.changed
+
+  # - name: Tag and push to docker hub dev
+  #   docker_image:
+  #     name: schogini/abdemotc:latest
+  #     repository: docker.io/schogini/abdemotc:dev
+  #     push: yes
+  #   when: docker_build.changed
+
+  - name: 'Remove Local Images'
+    shell: docker rmi -f schogini/tc:BUILD_ID
+    # shell: docker rmi -f schogini/abdemotc:latest schogini/abdemotc:dev
+
+  - name: Log out of DockerHub
+    docker_login:
+      state: absent
+    when: docker_build.changed
