@@ -20,6 +20,7 @@
       # registry: docker.io
       username: yadudock
       password: 1928yadu9325
+      email: yadusrb@gmail.com
       reauthorize: yes
     when: docker_build.changed
 
