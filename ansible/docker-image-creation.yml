@@ -27,7 +27,6 @@
   - name: Tag and push to docker hub latest
     docker_image:
       name: yadudock/tc:BUILD_ID
-      repository: docker.io/yadudock/tc:BUILD_ID
       push: yes
     when: docker_build.changed
 
