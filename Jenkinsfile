@@ -44,22 +44,22 @@ pipeline {
 
       stage('Build-Push Docker Image - Ansible') {
         steps {
-          sh "ansible-playbook ansible/docker-image-creation.yml"
-          //sh "ansible-playbook -i localhost ansible/sample.yml"
+          sh "sudo docker run --rm -i  --net ansnet --hostname ansible_ws -v ${params.JENKINSDIR}/workspace/${JOB_BASE_NAME}:/project -w /project -v //var/run/docker.sock:/var/run/docker.sock yadudock/docker-ansible-ws-ubuntu:v1 ansible-playbook -i localhost ansible/docker-image-creation.yml"
+          //sh "sudo docker run --rm -i  --net ansnet --hostname ansible_ws -v ${params.JENKINSDIR}/workspace/${JOB_BASE_NAME}:/project -w /project -v //var/run/docker.sock:/var/run/docker.sock yadudock/docker-ansible-ws-ubuntu:v1 ansible-playbook -i localhost ansible/sample.yml"
         }
       }
 
-      stage('Build Docker Image') {
-        steps {
-          sh "sudo docker build -t yadudock/tc:${BUILD_ID} tomcat"
-        }
-      }
-      stage('Push Docker Image') {
-        steps {
-          sh "cat  ~/.docker-pass|sudo docker login -u=${params.DOCKER_U} --password-stdin"
-          sh "sudo docker push yadudock/tc:${BUILD_ID}"
-        }
-      }
+      // stage('Build Docker Image') {
+      //   steps {
+      //     sh "sudo docker build -t yadudock/tc:${BUILD_ID} tomcat"
+      //   }
+      // }
+      // stage('Push Docker Image') {
+      //   steps {
+      //     sh "cat  ~/.docker-pass|sudo docker login -u=${params.DOCKER_U} --password-stdin"
+      //     sh "sudo docker push yadudock/tc:${BUILD_ID}"
+      //   }
+      // }
       stage('Deploy to Docker Tomcat') {
         steps {
       sh "sudo docker inspect my-tcc2 >/dev/null 2>&1 && sudo docker rm -f my-tcc2 || echo No container to remove. Proceed."

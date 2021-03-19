@@ -14,12 +14,12 @@
   # - name: 'Retag image'
   #   shell: docker tag yadudock/abdemotc:latest yadudock/tc:latest
   #   when: docker_build.changed
-
-  - name: Log into DockerHub
+  
+   - name: Log into DockerHub
     docker_login:
       # registry: docker.io
       username: yadudock
-      password: ABCD
+      password: 1928yadu9325
       reauthorize: yes
     when: docker_build.changed
 
