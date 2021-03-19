@@ -44,8 +44,8 @@ pipeline {
 
       stage('Build-Push Docker Image - Ansible') {
         steps {
-          //sh "ansible-playbook ansible/docker-image-creation.yml"
-          sh "ansible-playbook -i localhost ansible/sample.yml"
+          sh "ansible-playbook ansible/docker-image-creation.yml"
+          //sh "ansible-playbook -i localhost ansible/sample.yml"
         }
       }
 
